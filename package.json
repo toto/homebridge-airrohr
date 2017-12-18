@@ -1,0 +1,26 @@
+{
+  "name": "homebridge-airrohr",
+  "version": "1.0.0",
+  "description": "HomeBridge module for the DIY luftdaten.info particulates sensor",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \\\"Error: no test present\\\" && exit "
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/toto/homebridge-airrohr.git"
+  },
+  "keywords": [
+    "homebridge",
+    "nodemcu",
+    "airrohr",
+    "feinstaub",
+    "homekit"
+  ],
+  "author": "Thomas Kollbach <dev@bitfever.de>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/toto/homebridge-airrohr/issues"
+  },
+  "homepage": "https://github.com/toto/homebridge-airrohr#readme"
+}
