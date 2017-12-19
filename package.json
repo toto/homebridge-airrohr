@@ -11,6 +11,7 @@
     "url": "git+https://github.com/toto/homebridge-airrohr.git"
   },
   "keywords": [
+    "homebridge-plugin",
     "homebridge",
     "nodemcu",
     "airrohr",
@@ -18,7 +19,7 @@
     "homekit"
   ],
   "engines": {
-      "node": ">=7.0.0",
+      "node": ">=6.0.0",
       "homebridge": ">=0.2.0"
   },
   "author": "Thomas Kollbach <dev@bitfever.de>",
