@@ -11,8 +11,8 @@ module.exports = function(homebridge) {
   );
 };
 
-function getCurrentSensorData(hostname, callback) {
-  http.get(`http://${hostname}/data.json`, (res) => {
+function getCurrentSensorData(jsonURL, callback) {
+  http.get(jsonURL, (res) => {
     const { statusCode } = res;
     const contentType = res.headers['content-type'];
 
@@ -49,7 +49,6 @@ function getCurrentSensorData(hostname, callback) {
 function AirRohrAccessory(log, config) {
     this.log = log;
     this.name = config["name"];
-    this.hostname = config["hostname"];
     this.dataCache = null;
 
     // Information
@@ -115,7 +114,8 @@ function AirRohrAccessory(log, config) {
     };
 
     this.updateCache = (callback) => {
-      getCurrentSensorData(this.hostname, (json, error) => {
+      console.log("periodicCacheUpdate()");
+      getCurrentSensorData(this.config.json_data, (json, error) => {
         if (error) {
           console.error(`Could not get sensor data: ${error}`);
         } else {
