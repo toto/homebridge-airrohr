@@ -96,7 +96,6 @@ function AirRohrAccessory(log, config) {
       let temp = this.getCachedValue("temperature");
       if (temp) {
         this.temperature = temp;
-        console.log(`Update temp with with ${temp}C`);
         this.temperatureService.setCharacteristic(
           Characteristic.CurrentTemperature,
           this.temperature
@@ -105,7 +104,6 @@ function AirRohrAccessory(log, config) {
       let humidity = this.getCachedValue("humidity");
       if (humidity) {
         this.humidity = humidity;
-        console.log(`Update humidity with with ${humidity}%`);
         this.humidityService.setCharacteristic(
           Characteristic.CurrentRelativeHumidity,
           this.humidity
@@ -114,7 +112,6 @@ function AirRohrAccessory(log, config) {
       let pm25 = this.getCachedValue("SDS_P2");
       if (pm25) {
         this.pm25 = pm25;
-        console.log(`Update pm25 with with ${pm25}%`);
         this.airQualityService.setCharacteristic(
           Characteristic.PM2_5Density,
           this.pm25
@@ -123,7 +120,6 @@ function AirRohrAccessory(log, config) {
       let pm10 = this.getCachedValue("SDS_P1");
       if (pm10) {
         this.pm10 = pm10;
-        console.log(`Update pm10 with with ${pm10}%`);
         this.airQualityService.setCharacteristic(
           Characteristic.PM10Density,
           this.pm10
@@ -140,7 +136,6 @@ function AirRohrAccessory(log, config) {
         if (error) {
           console.error(`Could not get sensor data: ${error}`);
         } else {
-          console.log(`Updated data cache`);
           this.updateServices(json);
         }
         callback(error);
@@ -155,7 +150,6 @@ function AirRohrAccessory(log, config) {
           }
         }
       } else {
-        console.error(`No data cache`);
         this.updateCache();
       }
       return null;
@@ -198,34 +192,7 @@ function AirRohrAccessory(log, config) {
       .on("get", (callback) => {
           callback(null, this.temperature);
       });
-}
-
-
-AirRohrAccessory.prototype.getCurrentTemperature = function(callback) {
-  console.log(`Get temperature ${this.temperature}`);
-  callback(null, this.temperature);
 };
-
-AirRohrAccessory.prototype.getCurrentRelativeHumidity = function(callback) {
-  console.log(`Get humidity ${this.humidity}`);
-  callback(null, this.humidity);
-};
-
-AirRohrAccessory.prototype.getCurrentAirQuality = function(callback) {
-  console.log(`Get AirQuality`);
-  callback(null, Characteristic.AirQuality.GOOD);
-};
-
-AirRohrAccessory.prototype.getCurrentPM2_5Density = function(callback) {
-  console.log(`Get pm2.5 density ${this.pm25}`);
-  callback(null, this.pm25);
-};
-
-AirRohrAccessory.prototype.getCurrentPM10Density = function(callback) {
-  console.log(`Get pm10 density ${this.pm10}`);
-  callback(null, this.pm10);
-};
-
 
 AirRohrAccessory.prototype.getServices = function() {
   return [this.temperatureService, this.informationService, this.humidityService, this.airQualityService];
