@@ -1,0 +1,7 @@
+{
+  "name": "AirRohr",
+  "accessory": "airrohr",
+  "hostname": "feinstaubsensor-2987384.local",
+  "sensorId": "2987384",
+  "updateIntervalSeconds": 60
+}
