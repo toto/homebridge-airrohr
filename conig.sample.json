@@ -2,6 +2,6 @@
   "name": "AirRohr",
   "accessory": "airrohr",
   "json_data": "http://bitfever.de/~toto/airrohr_data.json",
-  "sensorId": "2987384",
-  "updateIntervalSeconds": 60
+  "sensor_id": "2987384",
+  "update_interval_seconds": 60
 }

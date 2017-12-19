@@ -50,6 +50,12 @@ function AirRohrAccessory(log, config) {
     this.log = log;
     this.name = config["name"];
     this.dataCache = null;
+    this.jsonURL = config["json_data"];
+    this.sensorId = config["sensor_id"];
+    this.updateIntervalSeconds = config["update_interval_seconds"];
+    if (!this.updateIntervalSeconds) {
+      this.updateIntervalSeconds = 120;
+    }
 
     // Information
 
@@ -64,7 +70,7 @@ function AirRohrAccessory(log, config) {
     );
     this.informationService.setCharacteristic(
       Characteristic.SerialNumber,
-      this.config.sensorId
+      this.sensorId
     );
 
     // Temperature Sensor
@@ -115,7 +121,7 @@ function AirRohrAccessory(log, config) {
 
     this.updateCache = (callback) => {
       console.log("periodicCacheUpdate()");
-      getCurrentSensorData(this.config.json_data, (json, error) => {
+      getCurrentSensorData(this.jsonURL, (json, error) => {
         if (error) {
           console.error(`Could not get sensor data: ${error}`);
         } else {
@@ -138,7 +144,7 @@ function AirRohrAccessory(log, config) {
 
     this.periodicCacheUpdate = () => {
       this.updateCache((error) => {
-        let time = this.config.updateIntervalSeconds * 1000; // 1 minute
+        let time = this.updateIntervalSeconds * 1000; // 1 minute
         setTimeInterval(() => {
           periodicCacheUpdate();
         }, time);
