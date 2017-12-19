@@ -127,7 +127,7 @@ function AirRohrAccessory(log, config) {
     };
     this.getCachedValue = (valueType) => {
       if (this.dataCache) {
-        for valueSet of json["sensordatavalues"] {
+        for (let valueSet of json["sensordatavalues"]) {
           if (valueType == valueSet["valueType"]) {
             return valueSet["value"];
           }
