@@ -16,3 +16,5 @@ The key setting is `json_data` property can either be set to:
 -  `http://api.luftdaten.info/v1/sensor/<YOUR_SENSOR_ID>/` to use the public sensor API. This way you can also add other people's sensors
 
 Follow the instructions for [HomeBridge](http://github.com/nfarina/homebridge)
+
+![homebridge-airrohr in apple home app](https://github.com/toto/homebridge-airrohr/raw/master/screenshot.jpeg)
