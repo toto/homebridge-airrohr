@@ -1,11 +1,12 @@
 'use strict';
-var Service, Characteristic;
+var Service, Characteristic, Accessory;
 
 const http = require('http');
 
 module.exports = function(homebridge) {
   Service = homebridge.hap.Service;
   Characteristic = homebridge.hap.Characteristic;
+  Accessory = homebridge.hap.Accessory;
   homebridge.registerAccessory(
     "homebridge-airrohr",
     "airrohr",
@@ -36,12 +37,12 @@ function getCurrentSensorData(jsonURL, callback) {
     let rawData = '';
     res.on('data', (chunk) => { rawData += chunk; });
     res.on('end', () => {
-      // try {
+      try {
         const parsedData = JSON.parse(rawData);
         callback(parsedData, null);
-      // } catch (e) {
-      //   callback(null, e);
-      // }
+      } catch (e) {
+        callback(null, e);
+      }
     });
   }).on('error', (e) => {
     callback(null, e);
@@ -49,6 +50,7 @@ function getCurrentSensorData(jsonURL, callback) {
 };
 
 function AirRohrAccessory(log, config) {
+    this.category = Accessory.Categories.SENSOR;
     this.log = log;
     this.name = config["name"];
     this.dataCache = null;
@@ -58,6 +60,7 @@ function AirRohrAccessory(log, config) {
     if (!this.updateIntervalSeconds) {
       this.updateIntervalSeconds = 120;
     }
+    console.log("AirRohr: Update interval", this.updateIntervalSeconds, "s");
 
     // Information
 
@@ -76,16 +79,15 @@ function AirRohrAccessory(log, config) {
     );
 
     // Temperature Sensor
-    this.temperatureService = new Service.TemperatureSensor(this.name);
+    this.temperatureService = new Service.TemperatureSensor(`Temperature ${this.name}`);
 
     // Humidity sensor
-    this.humidityService = new Service.HumiditySensor(this.name);
+    this.humidityService = new Service.HumiditySensor(`Humidity ${this.name}`);
 
     // AirQuality Sensor
-    this.airQualityService = new Service.AirQualitySensor(this.name);
-
-
-
+    this.airQualityService = new Service.AirQualitySensor(`Air quality ${this.name}`);
+    this.airQualityService.isPrimaryService = true;
+    this.airQualityService.linkedServices = [this.humidityService, this.temperatureService];
 
     this.updateServices = (json) => {
       this.dataCache = json;
@@ -95,6 +97,7 @@ function AirRohrAccessory(log, config) {
       );
       let temp = this.getCachedValue("temperature");
       if (temp) {
+        console.log("Measured temperatue", temp, "°C");
         this.temperature = temp;
         this.temperatureService.setCharacteristic(
           Characteristic.CurrentTemperature,
@@ -103,6 +106,7 @@ function AirRohrAccessory(log, config) {
       }
       let humidity = this.getCachedValue("humidity");
       if (humidity) {
+        console.log("Measured humidity", humidity, "%");
         this.humidity = humidity;
         this.humidityService.setCharacteristic(
           Characteristic.CurrentRelativeHumidity,
@@ -111,6 +115,7 @@ function AirRohrAccessory(log, config) {
       }
       let pm25 = this.getCachedValue("SDS_P2");
       if (pm25) {
+        console.log("Measured PM2.5", pm25, "µg/m³");
         this.pm25 = pm25;
         this.airQualityService.setCharacteristic(
           Characteristic.PM2_5Density,
@@ -119,6 +124,7 @@ function AirRohrAccessory(log, config) {
       }
       let pm10 = this.getCachedValue("SDS_P1");
       if (pm10) {
+        console.log("Measured PM10", pm10, "µg/m³");
         this.pm10 = pm10;
         this.airQualityService.setCharacteristic(
           Characteristic.PM10Density,
@@ -126,12 +132,50 @@ function AirRohrAccessory(log, config) {
         );
       }
 
-      // TODO: Calculate AirQUality
-      this.airQuality = Characteristic.AirQuality.GOOD;
+      // Calculate AirQUality:
+      //  average percentage of values below thesholds defined by WHO
+      //  <=40% -> EXCELLENT
+      //  <=60% -> GOOD
+      //  <=80% -> FAIR
+      //  <=100% -> INFERIOR
+      //  >100% -> POOR Since poor quality can be used as a trigger.
+      if (pm10 && pm25) {
+        // PM10: 50 µg/m³ daily limit
+        let percentPm10 = parseFloat(pm10) / 50.0;
+        // PM2.5: 25 µg/m³ daily limit
+        let percentPm25 = parseFloat(pm25) / 25.0;
+        let qualityPercentage = (percentPm10 + percentPm25) / 2.0;
+
+        let absChange = Math.abs(this.qualityPercentage - qualityPercentage);
+        let wasNotSet = this.qualityPercentage == undefined || this.qualityPercentage == null;
+        this.qualityPercentage = qualityPercentage;
+        // Only set new quality level if there was a significant change
+        if (wasNotSet || absChange >= 0.05) {
+          if (qualityPercentage <= 0.4) {
+            this.airQuality = Characteristic.AirQuality.EXCELLENT;
+          } else if (qualityPercentage <= 0.6) {
+            this.airQuality = Characteristic.AirQuality.GOOD;
+          } else if (qualityPercentage <= 0.8) {
+            this.airQuality = Characteristic.AirQuality.FAIR;
+          } else if (qualityPercentage <= 1.0) {
+            this.airQuality = Characteristic.AirQuality.INFERIOR;
+          } else if (qualityPercentage > 1.0) {
+            this.airQuality = Characteristic.AirQuality.POOR;
+          } else {
+            this.airQuality = Characteristic.AirQuality.UNKNOWN;
+          }
+          this.airQualityService.setCharacteristic(
+            Characteristic.AirQuality,
+            this.airQuality
+          );
+        }
+      }
+
+
+
     };
 
     this.updateCache = (callback) => {
-      console.log("updateCache()");
       getCurrentSensorData(this.jsonURL, (json, error) => {
         if (error) {
           console.error(`Could not get sensor data: ${error}`);
@@ -180,7 +224,6 @@ function AirRohrAccessory(log, config) {
         .on("get", (callback) => {
             callback(null, this.pm10);
         });
-
     this.humidityService
         .getCharacteristic(Characteristic.CurrentRelativeHumidity)
         .on("get", (callback) => {
