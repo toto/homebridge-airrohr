@@ -1,7 +1,7 @@
 {
   "name": "AirRohr",
   "accessory": "airrohr",
-  "json_data": "http://bitfever.de/~toto/airrohr_data.json",
-  "sensor_id": "2987384",
+  "json_data": "http://feinstaubsensor-2342523.local/data.json",
+  "sensor_id": "2342523",
   "update_interval_seconds": 60
 }
