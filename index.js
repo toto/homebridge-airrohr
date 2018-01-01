@@ -175,8 +175,15 @@ function AirRohrAccessory(log, config) {
 
     };
 
+    this.isUpdating = false;
     this.updateCache = (callback) => {
+      if (this.isUpdating) {
+        callback(null);
+        return;
+      }
+      this.isUpdating = true;
       getCurrentSensorData(this.jsonURL, (json, error) => {
+        this.isUpdating = false;
         if (error) {
           console.error(`Could not get sensor data: ${error}`);
         } else {
@@ -193,9 +200,7 @@ function AirRohrAccessory(log, config) {
             return valueSet["value"];
           }
         }
-      } else {
-        this.updateCache();
-      }
+      } 
       return null;
     };
 
