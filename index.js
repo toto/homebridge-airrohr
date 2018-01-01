@@ -189,7 +189,9 @@ function AirRohrAccessory(log, config) {
         } else {
           this.updateServices(json);
         }
-        callback(error);
+        if (callback) {
+          callback(error);
+        }
       });
     };
     this.getCachedValue = (valueType) => {
