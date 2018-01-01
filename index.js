@@ -60,7 +60,7 @@ function AirRohrAccessory(log, config) {
     if (!this.updateIntervalSeconds) {
       this.updateIntervalSeconds = 120;
     }
-    console.log("AirRohr: Update interval", this.updateIntervalSeconds, "s");
+    this.log("AirRohr: Update interval", this.updateIntervalSeconds, "s");
 
     // Information
 
@@ -97,7 +97,7 @@ function AirRohrAccessory(log, config) {
       );
       let temp = this.getCachedValue("temperature");
       if (temp) {
-        console.log("Measured temperatue", temp, "°C");
+        this.log("Measured temperatue", temp, "°C");
         this.temperature = temp;
         this.temperatureService.setCharacteristic(
           Characteristic.CurrentTemperature,
@@ -106,7 +106,7 @@ function AirRohrAccessory(log, config) {
       }
       let humidity = this.getCachedValue("humidity");
       if (humidity) {
-        console.log("Measured humidity", humidity, "%");
+        this.log("Measured humidity", humidity, "%");
         this.humidity = humidity;
         this.humidityService.setCharacteristic(
           Characteristic.CurrentRelativeHumidity,
@@ -115,7 +115,7 @@ function AirRohrAccessory(log, config) {
       }
       let pm25 = this.getCachedValue("SDS_P2");
       if (pm25) {
-        console.log("Measured PM2.5", pm25, "µg/m³");
+        this.log("Measured PM2.5", pm25, "µg/m³");
         this.pm25 = pm25;
         this.airQualityService.setCharacteristic(
           Characteristic.PM2_5Density,
@@ -124,7 +124,7 @@ function AirRohrAccessory(log, config) {
       }
       let pm10 = this.getCachedValue("SDS_P1");
       if (pm10) {
-        console.log("Measured PM10", pm10, "µg/m³");
+        this.log("Measured PM10", pm10, "µg/m³");
         this.pm10 = pm10;
         this.airQualityService.setCharacteristic(
           Characteristic.PM10Density,
@@ -185,7 +185,7 @@ function AirRohrAccessory(log, config) {
       getCurrentSensorData(this.jsonURL, (json, error) => {
         this.isUpdating = false;
         if (error) {
-          console.error(`Could not get sensor data: ${error}`);
+          this.log(`Could not get sensor data: ${error}`);
         } else {
           this.updateServices(json);
         }
@@ -204,15 +204,10 @@ function AirRohrAccessory(log, config) {
       return null;
     };
 
-    this.periodicCacheUpdate = () => {
-      this.updateCache((error) => {
-        let time = this.updateIntervalSeconds * 1000; // 1 minute
-        setInterval(() => {
-          this.periodicCacheUpdate();
-        }, time);
-      });
-    };
-    this.periodicCacheUpdate();
+    let time = this.updateIntervalSeconds * 1000; // 1 minute
+    setInterval(() => {
+      this.updateCache();
+    }, time);
 
     this.airQualityService
         .getCharacteristic(Characteristic.AirQuality)
