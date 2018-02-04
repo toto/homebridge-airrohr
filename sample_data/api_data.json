@@ -1,0 +1,66 @@
+[
+  {
+    "sampling_rate": null,
+    "sensordatavalues": [
+      {
+        "value_type": "P1",
+        "value": "36.50",
+        "id": 1404263069
+      },
+      {
+        "value_type": "P2",
+        "value": "11.77",
+        "id": 1404263070
+      }
+    ],
+    "timestamp": "2018-01-04 20:26:13",
+    "id": 644020044,
+    "sensor": {
+      "sensor_type": {
+        "id": 14,
+        "manufacturer": "Nova Fitness",
+        "name": "SDS011"
+      },
+      "pin": "1",
+      "id": 4668
+    },
+    "location": {
+      "longitude": "10.044",
+      "latitude": "53.568",
+      "id": 2348,
+      "country": "DE"
+    }
+  },
+  {
+    "sampling_rate": null,
+    "sensordatavalues": [
+      {
+        "value_type": "P1",
+        "value": "33.57",
+        "id": 1404275471
+      },
+      {
+        "value_type": "P2",
+        "value": "10.70",
+        "id": 1404275472
+      }
+    ],
+    "timestamp": "2018-01-04 20:28:40",
+    "id": 644025931,
+    "sensor": {
+      "sensor_type": {
+        "id": 14,
+        "manufacturer": "Nova Fitness",
+        "name": "SDS011"
+      },
+      "pin": "1",
+      "id": 4668
+    },
+    "location": {
+      "longitude": "10.044",
+      "latitude": "53.568",
+      "id": 2348,
+      "country": "DE"
+    }
+  }
+]

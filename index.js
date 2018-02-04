@@ -196,8 +196,17 @@ function AirRohrAccessory(log, config) {
     };
     this.getCachedValue = (valueType) => {
       if (this.dataCache) {
-        // console.log(`Getting ${valueType} from data cache ${JSON.stringify(this.dataCache)}`);
-        for (let valueSet of this.dataCache["sensordatavalues"]) {
+        let basedata = this.dataCache;
+        // If loading data from API the result sometimes is
+        // an array
+        if (Array.isArray(this.dataCache)) {
+          basedata = this.dataCache[0];
+        }
+        if (!basedata) {
+          return null;
+        }
+
+        for (let valueSet of basedata["sensordatavalues"]) {
           if (valueType == valueSet["value_type"]) {
             return valueSet["value"];
           }
