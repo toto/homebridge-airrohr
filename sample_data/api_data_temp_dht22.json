@@ -1,0 +1,68 @@
+[
+    {
+        "sensordatavalues": [
+            {
+                "value": "-1.60",
+                "value_type": "temperature",
+                "id": 1658379307
+            },
+            {
+                "value": "41.70",
+                "value_type": "humidity",
+                "id": 1658379308
+            }
+        ],
+        "sampling_rate": null,
+        "sensor": {
+            "pin": "7",
+            "sensor_type": {
+                "name": "DHT22",
+                "manufacturer": "various",
+                "id": 9
+            },
+            "id": 8563
+        },
+        "timestamp": "2018-02-06 16:15:10",
+        "location": {
+            "country": "DE",
+            "latitude": "52.523",
+            "longitude": "13.401",
+            "altitude": "38.5",
+            "id": 4319
+        },
+        "id": 764401390
+    },
+    {
+        "sensordatavalues": [
+            {
+                "value": "-1.70",
+                "value_type": "temperature",
+                "id": 1658393808
+            },
+            {
+                "value": "42.20",
+                "value_type": "humidity",
+                "id": 1658393809
+            }
+        ],
+        "sampling_rate": null,
+        "sensor": {
+            "pin": "7",
+            "sensor_type": {
+                "name": "DHT22",
+                "manufacturer": "various",
+                "id": 9
+            },
+            "id": 8563
+        },
+        "timestamp": "2018-02-06 16:17:38",
+        "location": {
+            "country": "DE",
+            "latitude": "52.523",
+            "longitude": "13.401",
+            "altitude": "38.5",
+            "id": 4319
+        },
+        "id": 764408235
+    }
+]
