@@ -1,10 +1,10 @@
 {
   "name": "homebridge-airrohr",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "HomeBridge module for the DIY luftdaten.info particulates sensor",
   "main": "index.js",
   "scripts": {
-    "test": "echo \\\"Error: no test present\\\" && exit "
+    "test": "mocha test/*"
   },
   "repository": {
     "type": "git",
@@ -19,13 +19,20 @@
     "homekit"
   ],
   "engines": {
-      "node": ">=6.0.0",
-      "homebridge": ">=0.2.0"
+    "node": ">=6.0.0",
+    "homebridge": ">=0.2.0"
+  },
+  "devDependencies": {
+    "chai": "*",
+    "mocha": "*"
   },
   "author": "Thomas Kollbach <dev@bitfever.de>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/toto/homebridge-airrohr/issues"
   },
-  "homepage": "https://github.com/toto/homebridge-airrohr#readme"
+  "homepage": "https://github.com/toto/homebridge-airrohr#readme",
+  "dependencies": {
+    "async": "^2.6.0"
+  }
 }

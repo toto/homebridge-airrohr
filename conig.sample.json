@@ -2,6 +2,8 @@
   "name": "AirRohr",
   "accessory": "airrohr",
   "json_data": "http://feinstaubsensor-2342523.local/data.json",
+  "public_temperature_json_data": "http://api.luftdaten.info/v1/sensor/4223/",
+  "public_airqualoity_json_data": "http://api.luftdaten.info/v1/sensor/2342/",
   "sensor_id": "2342523",
   "update_interval_seconds": 60
 }
