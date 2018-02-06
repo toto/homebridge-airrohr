@@ -15,11 +15,29 @@ describe('DataCache', () => {
             dataCache._updateHumidity(sampleData);
             assert.equal(dataCache.humidity, 34.1);
         });
-        it('should parse air particulate data from SDS011  correctly', () => {
+        it('should parse air particulate data from SDS011 correctly', () => {
             const dataCache = new DataCache();
             dataCache._updateAirQuality(sampleData);
             assert.equal(dataCache.pm10, 27.73);
             assert.equal(dataCache.pm25, 19.43);
+        });
+
+        const sampleDataBME280 = require('./../sample_data/data_BME280.json');
+        it('should parse temperature data from BME280 correctly', () => {
+            const dataCache = new DataCache();
+            dataCache._updateTemperature(sampleDataBME280);
+            assert.equal(dataCache.temperature, 6.86);
+        });
+        it('should parse humidity data from BME280 correctly', () => {
+            const dataCache = new DataCache();
+            dataCache._updateHumidity(sampleDataBME280);
+            assert.equal(dataCache.humidity, 86.66);
+        });
+        it('should parse air particulate data from SDS011 correctly', () => {
+            const dataCache = new DataCache();
+            dataCache._updateAirQuality(sampleDataBME280);
+            assert.equal(dataCache.pm10, 6.50);
+            assert.equal(dataCache.pm25, 3.20);
         });
     });
 
