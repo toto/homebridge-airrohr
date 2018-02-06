@@ -204,7 +204,7 @@ function AirRohrAccessory(log, config) {
       if (this.jsonURL) {
         this.dataCache.updateFromLocalSensor(this.jsonURL, updateCallback);
       } else if (this.airQualityDataURL && this.temperatureDataURL) {
-        this.dataCache.updateFromAPI(this.airQualityDataURL, this.temperatureDataURL, updateCallback);
+        this.dataCache.updateFromLuftdatenAPI(this.airQualityDataURL, this.temperatureDataURL, updateCallback);
       }
     };
 
