@@ -189,7 +189,7 @@ function AirRohrAccessory(log, config) {
       }
       this.isUpdating = true;
 
-      const callback = (error) => {
+      const updateCallback = (error) => {
         this.isUpdating = false;
         if (error) {
           this.log(`Could not get sensor data: ${error}`);
@@ -202,9 +202,9 @@ function AirRohrAccessory(log, config) {
       };
 
       if (this.jsonURL) {
-        this.dataCache.updateFromLocalSensor(this.jsonURL, callback);
+        this.dataCache.updateFromLocalSensor(this.jsonURL, updateCallback);
       } else if (this.airQualityDataURL && this.temperatureDataURL) {
-        this.dataCache.updateFromAPI(this.airQualityDataURL, this.temperatureDataURL, callback);
+        this.dataCache.updateFromAPI(this.airQualityDataURL, this.temperatureDataURL, updateCallback);
       }
     };
 
