@@ -212,6 +212,7 @@ function AirRohrAccessory(log, config) {
     setInterval(() => {
       this.updateCache();
     }, time);
+    updateCache();
 
     this.airQualityService
         .getCharacteristic(Characteristic.AirQuality)
