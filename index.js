@@ -1,6 +1,7 @@
 'use strict';
 var Service, Characteristic, Accessory;
 
+const DataCache = require('./lib/data_cache');
 const http = require('http');
 
 module.exports = function(homebridge) {
@@ -55,6 +56,12 @@ function AirRohrAccessory(log, config) {
     this.name = config["name"];
     this.dataCache = null;
     this.jsonURL = config["json_data"];
+    this.airQualityDataURL = config["public_airquality_json_data"];
+    this.temperatureDataURL = config["public_temperature_json_data"];
+    if (!this.jsonURL && !this.airQualityDataURL && !this.temperatureDataURL) {
+      throw new Error("Invalid configuration")
+    }
+
     this.sensorId = config["sensor_id"];
     this.updateIntervalSeconds = config["update_interval_seconds"];
     if (!this.updateIntervalSeconds) {
@@ -89,13 +96,13 @@ function AirRohrAccessory(log, config) {
     this.airQualityService.isPrimaryService = true;
     this.airQualityService.linkedServices = [this.humidityService, this.temperatureService];
 
-    this.updateServices = (json) => {
-      this.dataCache = json;
+    this.updateServices = (dataCache) => {
+      this.dataCache = dataCache;
       this.informationService.setCharacteristic(
         Characteristic.FirmwareRevision,
-        json.software_version
+        dataCache.software_version
       );
-      let temp = this.getCachedValue("temperature");
+      let temp = dataCache.temperature;
       if (temp) {
         this.log("Measured temperatue", temp, "°C");
         this.temperature = parseFloat(temp);
@@ -104,7 +111,7 @@ function AirRohrAccessory(log, config) {
           this.temperature
         );
       }
-      let humidity = this.getCachedValue("humidity");
+      let humidity = dataCache.humidity;
       if (humidity) {
         this.log("Measured humidity", humidity, "%");
         this.humidity = humidity;
@@ -113,7 +120,7 @@ function AirRohrAccessory(log, config) {
           this.humidity
         );
       }
-      let pm25 = this.getCachedValue("SDS_P2");
+      let pm25 = dataCache.pm25;
       if (pm25) {
         this.log("Measured PM2.5", pm25, "µg/m³");
         this.pm25 = pm25;
@@ -122,7 +129,7 @@ function AirRohrAccessory(log, config) {
           this.pm25
         );
       }
-      let pm10 = this.getCachedValue("SDS_P1");
+      let pm10 = dataCache.pm10;
       if (pm10) {
         this.log("Measured PM10", pm10, "µg/m³");
         this.pm10 = pm10;
@@ -170,11 +177,10 @@ function AirRohrAccessory(log, config) {
           );
         }
       }
-
-
-
     };
 
+    this.dataCache = new DataCache();
+    
     this.isUpdating = false;
     this.updateCache = (callback) => {
       if (this.isUpdating) {
@@ -182,37 +188,24 @@ function AirRohrAccessory(log, config) {
         return;
       }
       this.isUpdating = true;
-      getCurrentSensorData(this.jsonURL, (json, error) => {
+
+      const callback = (error) => {
         this.isUpdating = false;
         if (error) {
           this.log(`Could not get sensor data: ${error}`);
         } else {
-          this.updateServices(json);
+          this.updateServices(this.dataCache);
         }
         if (callback) {
           callback(error);
         }
-      });
-    };
-    this.getCachedValue = (valueType) => {
-      if (this.dataCache) {
-        let basedata = this.dataCache;
-        // If loading data from API the result sometimes is
-        // an array
-        if (Array.isArray(this.dataCache)) {
-          basedata = this.dataCache[0];
-        }
-        if (!basedata) {
-          return null;
-        }
+      };
 
-        for (let valueSet of basedata["sensordatavalues"]) {
-          if (valueType == valueSet["value_type"]) {
-            return valueSet["value"];
-          }
-        }
-      } 
-      return null;
+      if (this.jsonURL) {
+        this.dataCache.updateFromLocalSensor(this.jsonURL, callback);
+      } else if (this.airQualityDataURL && this.temperatureDataURL) {
+        this.dataCache.updateFromAPI(this.airQualityDataURL, this.temperatureDataURL, callback);
+      }
     };
 
     let time = this.updateIntervalSeconds * 1000; // 1 minute
