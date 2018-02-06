@@ -24,8 +24,7 @@
   },
   "devDependencies": {
     "chai": "*",
-    "mocha": "*",
-    "homebridge": "*"
+    "mocha": "*"
   },
   "author": "Thomas Kollbach <dev@bitfever.de>",
   "license": "MIT",
