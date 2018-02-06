@@ -1,6 +1,6 @@
 {
   "name": "homebridge-airrohr",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "description": "HomeBridge module for the DIY luftdaten.info particulates sensor",
   "main": "index.js",
   "scripts": {
