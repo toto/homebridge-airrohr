@@ -4,7 +4,7 @@
   "description": "HomeBridge module for the DIY luftdaten.info particulates sensor",
   "main": "index.js",
   "scripts": {
-    "test": "echo \\\"Error: no test present\\\" && exit "
+    "test": "mocha test/*"
   },
   "repository": {
     "type": "git",
@@ -21,6 +21,11 @@
   "engines": {
     "node": ">=6.0.0",
     "homebridge": ">=0.2.0"
+  },
+  "devDependencies": {
+    "chai": "*",
+    "mocha": "*",
+    "homebridge": "*"
   },
   "author": "Thomas Kollbach <dev@bitfever.de>",
   "license": "MIT",
