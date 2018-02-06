@@ -233,9 +233,16 @@ function AirRohrAccessory(log, config) {
         .on("get", (callback) => {
             callback(null, this.humidity);
         });
-
     this.temperatureService
       .getCharacteristic(Characteristic.CurrentTemperature)
+      .setProps({
+        format: Characteristic.Formats.FLOAT,
+        unit: Characteristic.Units.CELSIUS,
+        maxValue: 100,
+        minValue: -100,
+        minStep: 0.1,
+        perms: [Characteristic.Perms.READ, Characteristic.Perms.NOTIFY]
+      })
       .on("get", (callback) => {
           callback(null, this.temperature);
       });
