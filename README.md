@@ -26,7 +26,7 @@ using the same local network as your sensor.
 
 *Note:* If you use a HomeKit hub (like a Apple TV or a iPad) you can still access your data from outside your home. See [Apple's documentation for details](https://support.apple.com/en-us/HT207057).
 
-Don't set `public_temperature_json_data` or `public_airqualoity_json_data` in this scenario.
+Don't set `public_temperature_json_data` or `public_airquality_json_data` in this scenario.
 
 ### Option B: Use the luftdaten.info API
 
@@ -34,7 +34,7 @@ This allows you to add any sensor not only your own. To get the same functionali
 
 - Set `public_temperature_json_data` to the URL where to find the temperature data:  `http://api.luftdaten.info/v1/sensor/<YOUR_TEMPERATURE_SENSOR_ID>/` 
 
-- Set `public_airquality_json_data` to the URL where to find the air particualtes (PM10, PM25) data:  `http://api.luftdaten.info/v1/sensor/<YOUR_TEMPERATURE_SENSOR_ID>/` 
+- Set `public_airquality_json_data` to the URL where to find the air particulates (PM10, PM25) data:  `http://api.luftdaten.info/v1/sensor/<YOUR_AIRQUALITY_SENSOR_ID>/` 
 
 Don't set `json_data` in this scenario.
 
