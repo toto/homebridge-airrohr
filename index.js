@@ -184,7 +184,9 @@ function AirRohrAccessory(log, config) {
     this.isUpdating = false;
     this.updateCache = (callback) => {
       if (this.isUpdating) {
-        callback(null);
+        if (callback) {
+          callback(null);
+        }
         return;
       }
       this.isUpdating = true;
