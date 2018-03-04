@@ -19,7 +19,7 @@ First follow the instructions for [HomeBridge](http://github.com/nfarina/homebri
 
 Install `homebridge-airrohr` using `(sudo) npm install -g homebridge-airrohr`.
 
-Configure your AirRohr sensor in the `homebridge` settings file. See [conig.sample.json](https://github.com/toto/homebridge-airrohr/blob/master/conig.sample.json). All settings except `update_interval_seconds` are required (defaults to 120 seconds).
+Configure your AirRohr sensor in the `homebridge` settings file. See [conig.sample.json](conig.sample.json). All settings except `update_interval_seconds` are required (defaults to 120 seconds).
 
 To run this project you have two options
 
@@ -49,4 +49,4 @@ Don't set `json_data` in this scenario.
 
 ## Demo
 
-![homebridge-airrohr in apple home app](https://github.com/toto/homebridge-airrohr/raw/master/screenshot.jpeg)
+![homebridge-airrohr in apple home app](screenshot.jpeg)
