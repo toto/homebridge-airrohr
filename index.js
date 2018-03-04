@@ -113,7 +113,7 @@ function AirRohrAccessory(log, config) {
       );
       let temp = dataCache.temperature;
       if (temp) {
-        this.log("Measured temperatue", temp, "°C");
+        this.log("Measured temperature", temp, "°C");
         this.temperature = parseFloat(temp);
         this.temperatureService.setCharacteristic(
           Characteristic.CurrentTemperature,
@@ -157,7 +157,7 @@ function AirRohrAccessory(log, config) {
         );
       }
 
-      // Calculate AirQUality:
+      // Calculate AirQuality:
       //  average percentage of values below thesholds defined by WHO
       //  <=40% -> EXCELLENT
       //  <=60% -> GOOD
