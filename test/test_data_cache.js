@@ -33,6 +33,11 @@ describe('DataCache', () => {
             dataCache._updateHumidity(sampleDataBME280);
             assert.equal(dataCache.humidity, 86.66);
         });
+        it('should parse air pressure data from BME280 correctly', () => {
+            const dataCache = new DataCache();
+            dataCache._updatePressure(sampleDataBME280);
+            assert.equal(dataCache.pressure, 1000.0354);
+        });
         it('should parse air particulate data from SDS011 correctly', () => {
             const dataCache = new DataCache();
             dataCache._updateAirQuality(sampleDataBME280);
