@@ -54,7 +54,7 @@ function getCurrentSensorData(jsonURL, callback) {
 function AirRohrAccessory(log, config) {
     this.category = Accessory.Categories.SENSOR;
     this.log = log;
-    this.name = config["name"];
+    this.displayName = config["name"];
     this.dataCache = null;
     this.jsonURL = config["json_data"];
     this.airQualityDataURL = config["public_airquality_json_data"];
@@ -87,14 +87,14 @@ function AirRohrAccessory(log, config) {
     );
 
     // Temperature Sensor
-    this.temperatureService = new Service.TemperatureSensor(`Temperature ${this.name}`);
+    this.temperatureService = new Service.TemperatureSensor(`Temperature ${this.displayName}`);
     this.temperatureService.addOptionalCharacteristic(CustomCharacteristic.AirPressure);
 
     // Humidity sensor
-    this.humidityService = new Service.HumiditySensor(`Humidity ${this.name}`);
+    this.humidityService = new Service.HumiditySensor(`Humidity ${this.displayName}`);
 
     // AirQuality Sensor
-    this.airQualityService = new Service.AirQualitySensor(`Air quality ${this.name}`);
+    this.airQualityService = new Service.AirQualitySensor(`Air quality ${this.displayName}`);
     this.airQualityService.isPrimaryService = true;
     this.airQualityService.linkedServices = [this.humidityService, this.temperatureService];
 
