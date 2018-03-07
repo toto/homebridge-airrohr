@@ -1,5 +1,5 @@
 'use strict';
-var Service, Characteristic, Accessory;
+var Service, Characteristic, CustomCharacteristic, Accessory;
 
 const DataCache = require('./lib/data_cache');
 const http = require('http');
@@ -7,6 +7,7 @@ const http = require('http');
 module.exports = function(homebridge) {
   Service = homebridge.hap.Service;
   Characteristic = homebridge.hap.Characteristic;
+  CustomCharacteristic = require('./lib/custom_characteristics')(Characteristic);
   Accessory = homebridge.hap.Accessory;
   homebridge.registerAccessory(
     "homebridge-airrohr",
@@ -87,6 +88,7 @@ function AirRohrAccessory(log, config) {
 
     // Temperature Sensor
     this.temperatureService = new Service.TemperatureSensor(`Temperature ${this.name}`);
+    this.temperatureService.addOptionalCharacteristic(CustomCharacteristic.AirPressure);
 
     // Humidity sensor
     this.humidityService = new Service.HumiditySensor(`Humidity ${this.name}`);
@@ -118,6 +120,15 @@ function AirRohrAccessory(log, config) {
         this.humidityService.setCharacteristic(
           Characteristic.CurrentRelativeHumidity,
           this.humidity
+        );
+      }
+      let pressure = dataCache.pressure;
+      if (pressure) {
+        this.log("Measured pressure", pressure, "hPa");
+        this.pressure = pressure;
+        this.temperatureService.setCharacteristic(
+          CustomCharacteristic.AirPressure,
+          this.pressure
         );
       }
       let pm25 = dataCache.pm25;
