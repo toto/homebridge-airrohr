@@ -9,6 +9,8 @@ It can be used to see the status of your own sensor in HomeKit. You can also use
 ## Features
 
 - See air quality (incl. particulates values for PM10 and PM2.5), temperature and humidity in HomeKit and the Home app
+- Get the data from a sensor on your local network
+- Get the data from public senosor on `api.luftdaten.info`
 - _Soon:_ See history for temperature, etc. using the Elgato Eve app 
 
 ## Setup
