@@ -6,6 +6,11 @@
 
 It can be used to see the status of your own sensor in HomeKit. You can also use it to see another sensor if it's data is published to api.luftdaten.info (see [here](http://luftdaten.info/faq/#toggle-id-8)).
 
+## Features
+
+- See air quality (incl. particulates values for PM10 and PM2.5), temperature and humidity in HomeKit and the Home app
+- _Soon:_ See history for temperature, etc. using the Elgato Eve app 
+
 ## Setup
 
 First follow the instructions for [HomeBridge](http://github.com/nfarina/homebridge). 
