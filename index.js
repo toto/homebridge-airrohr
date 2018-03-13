@@ -1,14 +1,17 @@
 'use strict';
-var Service, Characteristic, CustomCharacteristic, Accessory;
+var Service, Characteristic, CustomCharacteristic, Accessory, FakeGatoHistoryService;
 
 const DataCache = require('./lib/data_cache');
 const http = require('http');
+const moment = require('moment');
 
 module.exports = function(homebridge) {
   Service = homebridge.hap.Service;
   Characteristic = homebridge.hap.Characteristic;
   CustomCharacteristic = require('./lib/custom_characteristics')(Characteristic);
   Accessory = homebridge.hap.Accessory;
+  FakeGatoHistoryService = require('fakegato-history')(homebridge);
+
   homebridge.registerAccessory(
     "homebridge-airrohr",
     "airrohr",
@@ -54,7 +57,7 @@ function getCurrentSensorData(jsonURL, callback) {
 function AirRohrAccessory(log, config) {
     this.category = Accessory.Categories.SENSOR;
     this.log = log;
-    this.name = config["name"];
+    this.displayName = config["name"];
     this.dataCache = null;
     this.jsonURL = config["json_data"];
     this.airQualityDataURL = config["public_airquality_json_data"];
@@ -87,16 +90,18 @@ function AirRohrAccessory(log, config) {
     );
 
     // Temperature Sensor
-    this.temperatureService = new Service.TemperatureSensor(`Temperature ${this.name}`);
+    this.temperatureService = new Service.TemperatureSensor(`Temperature ${this.displayName}`);
     this.temperatureService.addOptionalCharacteristic(CustomCharacteristic.AirPressure);
 
     // Humidity sensor
-    this.humidityService = new Service.HumiditySensor(`Humidity ${this.name}`);
+    this.humidityService = new Service.HumiditySensor(`Humidity ${this.displayName}`);
 
     // AirQuality Sensor
-    this.airQualityService = new Service.AirQualitySensor(`Air quality ${this.name}`);
+    this.airQualityService = new Service.AirQualitySensor(`Air quality ${this.displayName}`);
     this.airQualityService.isPrimaryService = true;
     this.airQualityService.linkedServices = [this.humidityService, this.temperatureService];
+
+    this.loggingService = new FakeGatoHistoryService('weather', this, {storage: 'fs'});
 
     this.updateServices = (dataCache) => {
       this.dataCache = dataCache;
@@ -188,6 +193,13 @@ function AirRohrAccessory(log, config) {
           );
         }
       }
+
+      this.loggingService.addEntry({
+          time: moment().unix(),
+          temp: temp,
+          pressure: pressure,
+          humidity: humidity
+      });
     };
 
     this.dataCache = new DataCache();
@@ -263,5 +275,5 @@ function AirRohrAccessory(log, config) {
 };
 
 AirRohrAccessory.prototype.getServices = function() {
-  return [this.temperatureService, this.informationService, this.humidityService, this.airQualityService];
+  return [this.temperatureService, this.informationService, this.humidityService, this.airQualityService, this.loggingService];
 };
