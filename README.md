@@ -19,7 +19,9 @@ First follow the instructions for [HomeBridge](http://github.com/nfarina/homebri
 
 Install `homebridge-airrohr` using `(sudo) npm install -g homebridge-airrohr`.
 
-Configure your AirRohr sensor in the `homebridge` settings file. See [config.sample.json](config.sample.json). All settings except `update_interval_seconds` are required (defaults to 120 seconds).
+Configure your AirRohr sensor in the `homebridge` settings file. See [config.sample.json](config.sample.json). All settings except `update_interval_seconds` (defaults to 120 seconds) and `history` (defaults to persisting to memory) are required.
+
+See the documentation of the [fakegato-history](https://github.com/simont77/fakegato-history/blob/master/README.md#history-persistence) module for the list of supported options.
 
 To run this project you have two options
 
