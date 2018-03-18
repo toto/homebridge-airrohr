@@ -73,6 +73,8 @@ function AirRohrAccessory(log, config) {
     }
     this.log("AirRohr: Update interval", this.updateIntervalSeconds, "s");
 
+    this.historyOptions = config["history"] || {};
+
     // Information
 
     this.informationService = new Service.AccessoryInformation();
@@ -101,7 +103,7 @@ function AirRohrAccessory(log, config) {
     this.airQualityService.isPrimaryService = true;
     this.airQualityService.linkedServices = [this.humidityService, this.temperatureService];
 
-    this.loggingService = new FakeGatoHistoryService('weather', this, {storage: 'fs'});
+    this.loggingService = new FakeGatoHistoryService('weather', this, this.historyOptions);
 
     this.updateServices = (dataCache) => {
       this.dataCache = dataCache;
