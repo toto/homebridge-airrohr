@@ -5,5 +5,8 @@
   "public_temperature_json_data": "http://api.luftdaten.info/v1/sensor/4223/",
   "public_airquality_json_data": "http://api.luftdaten.info/v1/sensor/2342/",
   "sensor_id": "2342523",
-  "update_interval_seconds": 60
+  "update_interval_seconds": 60,
+  "history": {
+    "storage": "fs"
+  }
 }
