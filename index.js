@@ -19,41 +19,6 @@ module.exports = function(homebridge) {
   );
 };
 
-function getCurrentSensorData(jsonURL, callback) {
-  http.get(jsonURL, (res) => {
-    const { statusCode } = res;
-    const contentType = res.headers['content-type'];
-
-    let error;
-    if (statusCode !== 200) {
-      error = new Error('Request Failed.\n' +
-                        `Status Code: ${statusCode}`);
-    } else if (!/^application\/json/.test(contentType)) {
-      error = new Error('Invalid content-type.\n' +
-                        `Expected application/json but received ${contentType}`);
-    }
-    if (error) {
-      res.resume();
-      callback(null, error);
-      return;
-    }
-
-    res.setEncoding('utf8');
-    let rawData = '';
-    res.on('data', (chunk) => { rawData += chunk; });
-    res.on('end', () => {
-      try {
-        const parsedData = JSON.parse(rawData);
-        callback(parsedData, null);
-      } catch (e) {
-        callback(null, e);
-      }
-    });
-  }).on('error', (e) => {
-    callback(null, e);
-  });
-};
-
 function AirRohrAccessory(log, config) {
     this.category = Accessory.Categories.SENSOR;
     this.log = log;
@@ -73,6 +38,9 @@ function AirRohrAccessory(log, config) {
     }
     this.log("AirRohr: Update interval", this.updateIntervalSeconds, "s");
 
+    const haveAirQualityData = !!this.jsonURL || !!this.airQualityDataURL;
+    const haveTemperatureData = !!this.jsonURL || !!this.temperatureDataURL;
+
     // Information
 
     this.informationService = new Service.AccessoryInformation();
@@ -89,19 +57,26 @@ function AirRohrAccessory(log, config) {
       this.sensorId
     );
 
-    // Temperature Sensor
-    this.temperatureService = new Service.TemperatureSensor(`Temperature ${this.displayName}`);
-    this.temperatureService.addOptionalCharacteristic(CustomCharacteristic.AirPressure);
+    if (haveTemperatureData) {
+      // Temperature Sensor
+      this.temperatureService = new Service.TemperatureSensor(`Temperature ${this.displayName}`);
+      this.temperatureService.addOptionalCharacteristic(CustomCharacteristic.AirPressure);
 
-    // Humidity sensor
-    this.humidityService = new Service.HumiditySensor(`Humidity ${this.displayName}`);
+      // Humidity sensor
+      this.humidityService = new Service.HumiditySensor(`Humidity ${this.displayName}`);
 
-    // AirQuality Sensor
-    this.airQualityService = new Service.AirQualitySensor(`Air quality ${this.displayName}`);
-    this.airQualityService.isPrimaryService = true;
-    this.airQualityService.linkedServices = [this.humidityService, this.temperatureService];
+      this.loggingService = new FakeGatoHistoryService('weather', this, {storage: 'fs'});
+    }
 
-    this.loggingService = new FakeGatoHistoryService('weather', this, {storage: 'fs'});
+    if (haveAirQualityData) {
+      // AirQuality Sensor
+      this.airQualityService = new Service.AirQualitySensor(`Air quality ${this.displayName}`);
+
+      if (haveTemperatureData) {
+        this.airQualityService.isPrimaryService = true;
+        this.airQualityService.linkedServices = [this.humidityService, this.temperatureService];
+      }
+    }
 
     this.updateServices = (dataCache) => {
       this.dataCache = dataCache;
@@ -110,8 +85,8 @@ function AirRohrAccessory(log, config) {
         dataCache.software_version
       );
       let temp = dataCache.temperature;
-      if (temp) {
-        this.log("Measured temperatue", temp, "°C");
+      if (haveTemperatureData && temp) {
+        this.log("Measured temperature", temp, "°C");
         this.temperature = parseFloat(temp);
         this.temperatureService.setCharacteristic(
           Characteristic.CurrentTemperature,
@@ -119,7 +94,7 @@ function AirRohrAccessory(log, config) {
         );
       }
       let humidity = dataCache.humidity;
-      if (humidity) {
+      if (haveTemperatureData && humidity) {
         this.log("Measured humidity", humidity, "%");
         this.humidity = humidity;
         this.humidityService.setCharacteristic(
@@ -128,7 +103,7 @@ function AirRohrAccessory(log, config) {
         );
       }
       let pressure = dataCache.pressure;
-      if (pressure) {
+      if (haveTemperatureData && pressure) {
         this.log("Measured pressure", pressure, "hPa");
         this.pressure = pressure;
         this.temperatureService.setCharacteristic(
@@ -137,7 +112,7 @@ function AirRohrAccessory(log, config) {
         );
       }
       let pm25 = dataCache.pm25;
-      if (pm25) {
+      if (haveAirQualityData && pm25) {
         this.log("Measured PM2.5", pm25, "µg/m³");
         this.pm25 = pm25;
         this.airQualityService.setCharacteristic(
@@ -146,7 +121,7 @@ function AirRohrAccessory(log, config) {
         );
       }
       let pm10 = dataCache.pm10;
-      if (pm10) {
+      if (haveAirQualityData && pm10) {
         this.log("Measured PM10", pm10, "µg/m³");
         this.pm10 = pm10;
         this.airQualityService.setCharacteristic(
@@ -162,7 +137,7 @@ function AirRohrAccessory(log, config) {
       //  <=80% -> FAIR
       //  <=100% -> INFERIOR
       //  >100% -> POOR Since poor quality can be used as a trigger.
-      if (pm10 && pm25) {
+      if (haveAirQualityData && pm10 && pm25) {
         // PM10: 50 µg/m³ daily limit
         let percentPm10 = parseFloat(pm10) / 50.0;
         // PM2.5: 25 µg/m³ daily limit
@@ -194,16 +169,18 @@ function AirRohrAccessory(log, config) {
         }
       }
 
-      this.loggingService.addEntry({
-          time: moment().unix(),
-          temp: temp,
-          pressure: pressure,
-          humidity: humidity
-      });
+      if (haveTemperatureData) {
+        this.loggingService.addEntry({
+            time: moment().unix(),
+            temp: temp,
+            pressure: pressure,
+            humidity: humidity
+        });
+      }
     };
 
     this.dataCache = new DataCache();
-    
+
     this.isUpdating = false;
     this.updateCache = (callback) => {
       if (this.isUpdating) {
@@ -228,7 +205,7 @@ function AirRohrAccessory(log, config) {
 
       if (this.jsonURL) {
         this.dataCache.updateFromLocalSensor(this.jsonURL, updateCallback);
-      } else if (this.airQualityDataURL && this.temperatureDataURL) {
+      } else if (this.airQualityDataURL || this.temperatureDataURL) {
         this.dataCache.updateFromLuftdatenAPI(this.airQualityDataURL, this.temperatureDataURL, updateCallback);
       }
     };
@@ -239,41 +216,54 @@ function AirRohrAccessory(log, config) {
     }, time);
     this.updateCache();
 
-    this.airQualityService
-        .getCharacteristic(Characteristic.AirQuality)
+    if (haveAirQualityData) {
+      this.airQualityService
+          .getCharacteristic(Characteristic.AirQuality)
+          .on("get", (callback) => {
+              callback(null, this.airQuality);
+          });
+      this.airQualityService
+          .getCharacteristic(Characteristic.PM2_5Density)
+          .on("get", (callback) => {
+              callback(null, this.pm25);
+          });
+      this.airQualityService
+          .getCharacteristic(Characteristic.PM10Density)
+          .on("get", (callback) => {
+              callback(null, this.pm10);
+          });
+    }
+
+    if (haveTemperatureData) {
+      this.humidityService
+          .getCharacteristic(Characteristic.CurrentRelativeHumidity)
+          .on("get", (callback) => {
+              callback(null, this.humidity);
+          });
+      this.temperatureService
+        .getCharacteristic(Characteristic.CurrentTemperature)
+        .setProps({
+          format: Characteristic.Formats.FLOAT,
+          unit: Characteristic.Units.CELSIUS,
+          maxValue: 100,
+          minValue: -100,
+          minStep: 0.1,
+          perms: [Characteristic.Perms.READ, Characteristic.Perms.NOTIFY]
+        })
         .on("get", (callback) => {
-            callback(null, this.airQuality);
+            callback(null, this.temperature);
         });
-    this.airQualityService
-        .getCharacteristic(Characteristic.PM2_5Density)
-        .on("get", (callback) => {
-            callback(null, this.pm25);
-        });
-    this.airQualityService
-        .getCharacteristic(Characteristic.PM10Density)
-        .on("get", (callback) => {
-            callback(null, this.pm10);
-        });
-    this.humidityService
-        .getCharacteristic(Characteristic.CurrentRelativeHumidity)
-        .on("get", (callback) => {
-            callback(null, this.humidity);
-        });
-    this.temperatureService
-      .getCharacteristic(Characteristic.CurrentTemperature)
-      .setProps({
-        format: Characteristic.Formats.FLOAT,
-        unit: Characteristic.Units.CELSIUS,
-        maxValue: 100,
-        minValue: -100,
-        minStep: 0.1,
-        perms: [Characteristic.Perms.READ, Characteristic.Perms.NOTIFY]
-      })
-      .on("get", (callback) => {
-          callback(null, this.temperature);
-      });
+    }
 };
 
 AirRohrAccessory.prototype.getServices = function() {
-  return [this.temperatureService, this.informationService, this.humidityService, this.airQualityService, this.loggingService];
+  return [
+    this.temperatureService,
+    this.informationService,
+    this.humidityService,
+    this.airQualityService,
+    this.loggingService
+  ].filter(function(s) {
+    return s !== undefined;
+  });
 };
