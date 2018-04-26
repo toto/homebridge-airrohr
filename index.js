@@ -86,7 +86,7 @@ function AirRohrAccessory(log, config) {
       );
       let temp = dataCache.temperature;
       if (haveTemperatureData && temp) {
-        this.log("Measured temperatue", temp, "°C");
+        this.log("Measured temperature", temp, "°C");
         this.temperature = parseFloat(temp);
         this.temperatureService.setCharacteristic(
           Characteristic.CurrentTemperature,
