@@ -30,7 +30,8 @@
   },
   "devDependencies": {
     "chai": "*",
-    "mocha": "*"
+    "mocha": "*",
+    "diff": ">=3.5.0"
   },
   "author": "Thomas Kollbach <dev@bitfever.de>",
   "license": "MIT",
