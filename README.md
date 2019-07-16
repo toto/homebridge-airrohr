@@ -13,6 +13,8 @@ It can be used to see the status of your own sensor in HomeKit. You can also use
 - Get the data from public sensor on `api.luftdaten.info`
 - _Soon:_ See history for temperature, etc. using the Elgato Eve app 
 
+![homebridge-airrohr sensor in the wild](img/sensor.jpeg)
+
 ## Setup
 
 First follow the instructions for [HomeBridge](http://github.com/nfarina/homebridge). 
@@ -51,4 +53,4 @@ Don't set `json_data` in this scenario.
 
 ## Demo
 
-![homebridge-airrohr in apple home app](screenshot.jpeg)
+![homebridge-airrohr in apple home app](img/screenshot.jpeg)
