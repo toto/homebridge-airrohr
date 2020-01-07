@@ -1,10 +1,10 @@
 'use strict';
 var Service, Characteristic, CustomCharacteristic, Accessory, FakeGatoHistoryService;
 
-import DataCache from './lib/data_cache';
-import moment from 'moment';
+const DataCache = require('./lib/data_cache');
+const moment = require('moment');
 
-export default function(homebridge) {
+module.exports = function(homebridge) {
   Service = homebridge.hap.Service;
   Characteristic = homebridge.hap.Characteristic;
   CustomCharacteristic = require('./lib/custom_characteristics')(Characteristic);
@@ -139,7 +139,7 @@ class AirRohrAccessory {
       if (haveTemperatureData) {
         this.loggingService.addEntry({
           time: moment().unix(),
-          temp: temp,
+          temp: temperature,
           pressure: pressure,
           humidity: humidity
         });
@@ -219,6 +219,6 @@ class AirRohrAccessory {
       return s !== undefined;
     });
   }
-};
+}
 
 
