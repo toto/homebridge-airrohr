@@ -1,10 +1,10 @@
 'use strict';
 var Service, Characteristic, CustomCharacteristic, Accessory, FakeGatoHistoryService;
 
-const DataCache = require('./lib/data_cache');
-const moment = require('moment');
+import DataCache from './lib/data_cache';
+import moment from 'moment';
 
-module.exports = function(homebridge) {
+export default function(homebridge) {
   Service = homebridge.hap.Service;
   Characteristic = homebridge.hap.Characteristic;
   CustomCharacteristic = require('./lib/custom_characteristics')(Characteristic);
