@@ -139,7 +139,7 @@ class AirRohrAccessory {
       if (haveTemperatureData) {
         this.loggingService.addEntry({
           time: moment().unix(),
-          temp: temp,
+          temp: temperature,
           pressure: pressure,
           humidity: humidity
         });
@@ -219,6 +219,6 @@ class AirRohrAccessory {
       return s !== undefined;
     });
   }
-};
+}
 
 
