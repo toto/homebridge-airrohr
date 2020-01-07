@@ -2,7 +2,6 @@
 var Service, Characteristic, CustomCharacteristic, Accessory, FakeGatoHistoryService;
 
 const DataCache = require('./lib/data_cache');
-const http = require('http');
 const moment = require('moment');
 
 module.exports = function(homebridge) {
