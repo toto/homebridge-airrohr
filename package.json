@@ -4,7 +4,8 @@
   "description": "HomeBridge module for the DIY luftdaten.info particulates sensor",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test/*"
+    "test": "node_modules/.bin/mocha test/*",
+    "lint": "node_modules/.bin/eslint ."
   },
   "repository": {
     "type": "git",
