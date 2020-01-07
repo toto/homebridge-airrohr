@@ -43,9 +43,9 @@ Don't set `public_temperature_json_data` or `public_airquality_json_data` in thi
 
 This allows you to add any sensor not only your own. To get the same functionality as above you need to set two IDs/URLs:
 
-- Set `public_temperature_json_data` to the URL where to find the temperature data:  `http://api.luftdaten.info/v1/sensor/<YOUR_TEMPERATURE_SENSOR_ID>/` 
+- Set `public_temperature_json_data` to the URL where to find the temperature data:  `http://data.sensor.community/airrohr/v1/sensor/<YOUR_TEMPERATURE_SENSOR_ID>/` 
 
-- Set `public_airquality_json_data` to the URL where to find the air particulates (PM10, PM25) data:  `http://api.luftdaten.info/v1/sensor/<YOUR_AIRQUALITY_SENSOR_ID>/` 
+- Set `public_airquality_json_data` to the URL where to find the air particulates (PM10, PM25) data:  `http://data.sensor.community/airrohr/v1/sensor/<YOUR_AIRQUALITY_SENSOR_ID>/` 
 
 Don't set `json_data` in this scenario.
 
