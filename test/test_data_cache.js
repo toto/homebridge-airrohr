@@ -61,6 +61,18 @@ describe('DataCache', () => {
             dataCache._updatePressure(sampleDataDHT22BMP280);
             assert.equal(dataCache.pressure, 983.6006);
         });
+
+        const sampleDataSHT3X = require('./../sample_data/data_SHT3X.json');
+        it('should parse temperature data from SHT3X correctly', () => {
+            const dataCache = new DataCache();
+            dataCache._updateTemperature(sampleDataSHT3X);
+            assert.equal(dataCache.temperature, 1.83);
+        });
+        it('should parse humidity data from SHT3X correctly', () => {
+            const dataCache = new DataCache();
+            dataCache._updateHumidity(sampleDataSHT3X);
+            assert.equal(dataCache.humidity, 91.34);
+        });
     });
 
     describe('luftdaten.info API data', () => {
