@@ -4,7 +4,7 @@
 
 [HomeBridge](http://github.com/nfarina/homebridge) module for the DIY [luftdaten.info](https://luftdaten.info) [air particulates](https://en.wikipedia.org/wiki/Particulates) sensor from [OpenData Stuttgart](ttps://github.com/opendata-stuttgart/).
 
-It can be used to see the status of your own sensor in HomeKit. You can also use it to see another sensor if its data is published to api.luftdaten.info (see [here](http://luftdaten.info/faq/#toggle-id-8)).
+It can be used to see the status of your own sensor in HomeKit. You can also use it to see another sensor if its data is published to data.sensor.community (see [here for more info](http://sensor.community)).
 
 ## Features
 
