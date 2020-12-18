@@ -10,7 +10,7 @@ It can be used to see the status of your own sensor in HomeKit. You can also use
 
 - See air quality (incl. particulates values for PM10 and PM2.5), temperature and humidity in HomeKit and the Home app
 - Get the data from a sensor on your local network
-- Get the data from public sensor on `api.luftdaten.info`
+- Get the data from public sensor on `data.sensor.community`
 - _Soon:_ See history for temperature, etc. using the Elgato Eve app 
 
 ![homebridge-airrohr sensor in the wild](img/sensor.jpeg)
