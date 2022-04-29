@@ -27,6 +27,7 @@ class AirRohrAccessory {
     this.jsonURL = config["json_data"];
     this.airQualityDataURL = config["public_airquality_json_data"];
     this.temperatureDataURL = config["public_temperature_json_data"];
+    this.disableHumidity = config["disable_humidity"];
     if (!this.jsonURL && !this.airQualityDataURL && !this.temperatureDataURL) {
       throw new Error("Invalid configuration");
     }
@@ -48,8 +49,10 @@ class AirRohrAccessory {
       // Temperature Sensor
       this.temperatureService = new Service.TemperatureSensor(`Temperature ${this.displayName}`);
       this.temperatureService.addOptionalCharacteristic(CustomCharacteristic.AirPressure);
-      // Humidity sensor
-      this.humidityService = new Service.HumiditySensor(`Humidity ${this.displayName}`);
+      if (!this.disableHumidity) {
+        // Humidity sensor
+        this.humidityService = new Service.HumiditySensor(`Humidity ${this.displayName}`);
+      }
       this.loggingService = new FakeGatoHistoryService('weather', this, { storage: 'fs' });
     }
     if (haveAirQualityData) {
@@ -57,7 +60,11 @@ class AirRohrAccessory {
       this.airQualityService = new Service.AirQualitySensor(`Air quality ${this.displayName}`);
       if (haveTemperatureData) {
         this.airQualityService.isPrimaryService = true;
-        this.airQualityService.linkedServices = [this.humidityService, this.temperatureService];
+        if (this.disableHumidity) {
+          this.airQualityService.linkedServices = [this.temperatureService];
+        } else {
+          this.airQualityService.linkedServices = [this.humidityService, this.temperatureService];
+        }
       }
     }
     this.updateServices = (dataCache) => {
@@ -76,7 +83,7 @@ class AirRohrAccessory {
         this.temperature = parseFloat(temperature);
         this.temperatureService.setCharacteristic(Characteristic.CurrentTemperature, this.temperature);
       }
-      if (haveTemperatureData && humidity) {
+      if (haveTemperatureData && humidity && !this.disableHumidity) {
         this.log("Measured humidity", humidity, "%");
         this.humidity = humidity;
         this.humidityService.setCharacteristic(Characteristic.CurrentRelativeHumidity, this.humidity);
@@ -191,9 +198,11 @@ class AirRohrAccessory {
         .on("get", callback => callback(null, this.pm10));
     }
     if (haveTemperatureData) {
-      this.humidityService
-        .getCharacteristic(Characteristic.CurrentRelativeHumidity)
-        .on("get", callback => callback(null, this.humidity));
+      if (!this.disableHumidity) {
+        this.humidityService
+          .getCharacteristic(Characteristic.CurrentRelativeHumidity)
+          .on("get", callback => callback(null, this.humidity));
+      }
       this.temperatureService
         .getCharacteristic(Characteristic.CurrentTemperature)
         .setProps({
@@ -220,5 +229,6 @@ class AirRohrAccessory {
     });
   }
 }
+
 
 
