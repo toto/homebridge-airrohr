@@ -27,7 +27,21 @@ class AirRohrAccessory {
     this.jsonURL = config["json_data"];
     this.airQualityDataURL = config["public_airquality_json_data"];
     this.temperatureDataURL = config["public_temperature_json_data"];
-    this.disableHumidity = config["disable_humidity"];
+    this.disableHumidity = !!config["disable_humidity"];
+    this.disableTemperature = !!config["disable_temperature"];
+    this.disablePmm25 = !!config["disable_pm25"];
+    this.disablePm10 = !!config["disable_pm10"];
+    this.disablePressure = !!config["disable_pressure"];
+    // Daily dose limits, defaults are 
+    // PM10: 50 µg/m³ daily limit
+    // PM2.5: 25 µg/m³ daily limit
+    this.limits = { pm10: 50.0, pm25: 25.0 };
+    if (config["daily_limits"]) {
+      const { pm10, pm25 } = config["daily_limits"];
+      if (pm10) this.limits.pm10 = pm10;
+      if (pm25) this.limits.pm25 = pm25;
+    }
+
     if (!this.jsonURL && !this.airQualityDataURL && !this.temperatureDataURL) {
       throw new Error("Invalid configuration");
     }
@@ -39,7 +53,7 @@ class AirRohrAccessory {
     this.log("AirRohr: Update interval", this.updateIntervalSeconds, "s");
     this.historyOptions = config["history"] || {};
     const haveAirQualityData = !!this.jsonURL || !!this.airQualityDataURL;
-    const haveTemperatureData = !!this.jsonURL || !!this.temperatureDataURL;
+    let haveTemperatureData = !!this.jsonURL || !!this.temperatureDataURL;
     // Information
     this.informationService = new Service.AccessoryInformation();
     this.informationService.setCharacteristic(Characteristic.Manufacturer, "luftdaten.info");
@@ -48,7 +62,9 @@ class AirRohrAccessory {
     if (haveTemperatureData) {
       // Temperature Sensor
       this.temperatureService = new Service.TemperatureSensor(`Temperature ${this.displayName}`);
-      this.temperatureService.addOptionalCharacteristic(CustomCharacteristic.AirPressure);
+      if (!this.disablePressure) {
+        this.temperatureService.addOptionalCharacteristic(CustomCharacteristic.AirPressure);
+      }
       if (!this.disableHumidity) {
         // Humidity sensor
         this.humidityService = new Service.HumiditySensor(`Humidity ${this.displayName}`);
@@ -78,7 +94,7 @@ class AirRohrAccessory {
       } = dataCache;
 
       this.informationService.setCharacteristic(Characteristic.FirmwareRevision, dataCache.software_version);
-      if (haveTemperatureData && temperature) {
+      if (haveTemperatureData && temperature && !this.disableTemperature) {
         this.log("Measured temperature", temperature, "°C");
         this.temperature = parseFloat(temperature);
         this.temperatureService.setCharacteristic(Characteristic.CurrentTemperature, this.temperature);
@@ -88,7 +104,7 @@ class AirRohrAccessory {
         this.humidity = humidity;
         this.humidityService.setCharacteristic(Characteristic.CurrentRelativeHumidity, this.humidity);
       }
-      if (haveTemperatureData && pressure) {
+      if (haveTemperatureData && pressure && !this.disablePressure) {
         this.log("Measured pressure", pressure, "hPa");
         this.pressure = pressure;
         this.temperatureService.setCharacteristic(CustomCharacteristic.AirPressure, this.pressure);
@@ -98,7 +114,6 @@ class AirRohrAccessory {
         this.pm25 = pm25;
         this.airQualityService.setCharacteristic(Characteristic.PM2_5Density, this.pm25);
       }
-      
       if (haveAirQualityData && pm10) {
         this.log("Measured PM10", pm10, "µg/m³");
         this.pm10 = pm10;
@@ -111,12 +126,19 @@ class AirRohrAccessory {
       //  <=80% -> FAIR
       //  <=100% -> INFERIOR
       //  >100% -> POOR Since poor quality can be used as a trigger.
-      if (haveAirQualityData && pm10 && pm25) {
-        // PM10: 50 µg/m³ daily limit
-        let percentPm10 = parseFloat(pm10) / 50.0;
-        // PM2.5: 25 µg/m³ daily limit
-        let percentPm25 = parseFloat(pm25) / 25.0;
-        let qualityPercentage = (percentPm10 + percentPm25) / 2.0;
+      if (haveAirQualityData && (pm10 || pm25)) {
+        const percentages = [];
+
+        if (pm10) {
+          // PM10: 50 µg/m³ daily limit
+          percentages.push(parseFloat(pm10) / this.limits.pm10);
+        }
+        if (pm25) {
+          // PM2.5: 25 µg/m³ daily limit
+          percentages.push(parseFloat(pm25) / this.limits.pm25);
+        }
+
+        let qualityPercentage = percentages.reduce((p,c) => p + c, 0.0) / percentages.length;
         let absChange = Math.abs(this.qualityPercentage - qualityPercentage);
         let wasNotSet = this.qualityPercentage == undefined || this.qualityPercentage == null;
         this.qualityPercentage = qualityPercentage;

@@ -56,6 +56,26 @@ Don't set `json_data` in this scenario.
 
 *Note:* If you set `json_data` the `public_…` settings will be ignored.
 
+## Advanced configuration
+
+### Disabling sensors
+
+You can disable several characteristics by setting: 
+
+- `"disable_humidity": true`
+- `"disable_temperature": true`
+- `"disable_pressure": true`
+- `"disable_pm25": true`
+- `"disable_pm10": true`
+
+in the config file. Note that if you disable temperature pressure will also not be disanbled.
+
+### Configuring alert limits
+
+The warning levels are calculated at <=40% -> EXCELLENT, <=60% -> GOOD, <=80% -> FAIR, <=100% -> INFERIOR, >100% -> POOR quality. 
+
+The basis for this calculation is the average of the percentage of a daily maximum limit for PM10 and PM2,5. These limits default to 50 µg/m³ and 25 µg/m³ respectivly. However these can be adjusted in the config as well. See the sample config for this.
+
 ## Demo
 
 ![homebridge-airrohr in apple home app](img/screenshot.jpeg)
