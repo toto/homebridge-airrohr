@@ -8,5 +8,14 @@
   "update_interval_seconds": 60,
   "history": {
     "storage": "fs"
+  },
+  "disable_humidity": false,
+  "disable_temperature": false,
+  "disable_pressure": false,
+  "disable_pm25": false,
+  "disable_pm10": false,
+  "daily_limits": {
+    "pm10": 50.0,
+    "pm25": 25.0
   }
 }
