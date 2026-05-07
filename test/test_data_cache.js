@@ -1,5 +1,6 @@
 const DataCache = require('./../lib/data_cache');
-const { assert } = require('chai');
+const assert = require('node:assert/strict');
+const { describe, it } = require('node:test');
 
 describe('DataCache', () => {
     describe('local network sensor data', () => {
