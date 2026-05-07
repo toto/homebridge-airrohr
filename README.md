@@ -24,6 +24,8 @@ It can be used to see the status of your own sensor in HomeKit. You can also use
 
 First follow the instructions for [HomeBridge](http://github.com/nfarina/homebridge). 
 
+This plugin version supports Homebridge 1.11 and Homebridge 2.x on Node.js 22 or 24.
+
 Install `homebridge-airrohr` using `(sudo) npm install -g homebridge-airrohr`.
 
 Configure your AirRohr sensor in the `homebridge` settings file. See [config.sample.json](config.sample.json). All settings except `update_interval_seconds` (defaults to 120 seconds) and `history` (defaults to persisting to memory) are required.
@@ -68,7 +70,7 @@ You can disable several characteristics by setting:
 - `"disable_pm25": true`
 - `"disable_pm10": true`
 
-in the config file. Note that if you disable temperature pressure will also not be disanbled.
+in the config file.
 
 ### Configuring alert limits
 
