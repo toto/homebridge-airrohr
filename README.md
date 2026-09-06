@@ -24,11 +24,27 @@ It can be used to see the status of your own sensor in HomeKit. You can also use
 
 First follow the instructions for [HomeBridge](http://github.com/nfarina/homebridge). 
 
+This plugin version supports Homebridge 1.11 and Homebridge 2.x on Node.js 22 or 24.
+
 Install `homebridge-airrohr` using `(sudo) npm install -g homebridge-airrohr`.
 
 Configure your AirRohr sensor in the `homebridge` settings file. See [config.sample.json](config.sample.json). All settings except `update_interval_seconds` (defaults to 120 seconds) and `history` (defaults to persisting to memory) are required.
 
 See the documentation of the [fakegato-history](https://github.com/simont77/fakegato-history/blob/master/README.md#history-persistence) module for the list of supported options.
+
+## Homebridge 2 / plugin v2
+
+Version 2 of this plugin is compatible with Homebridge 2 while still supporting Homebridge 1.11. It publishes both CommonJS and ESM entrypoints so Homebridge can load the plugin in either runtime.
+
+No configuration migration is required when upgrading from plugin v1. Keep using `"accessory": "airrohr"` and the same configuration keys shown in [config.sample.json](config.sample.json).
+
+Notable changes in plugin v2:
+
+- Node.js 22 or 24 is required.
+- Homebridge 1.11 or Homebridge 2.x is supported.
+- `disable_pm25` and `disable_pm10` are now honored.
+- Sensor readings with a value of `0` are treated as valid readings.
+- `history` options are passed through to `fakegato-history`; filesystem storage remains the default.
 
 To run this project you have two options
 
@@ -68,7 +84,7 @@ You can disable several characteristics by setting:
 - `"disable_pm25": true`
 - `"disable_pm10": true`
 
-in the config file. Note that if you disable temperature pressure will also not be disanbled.
+in the config file.
 
 ### Configuring alert limits
 

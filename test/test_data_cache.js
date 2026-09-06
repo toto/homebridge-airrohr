@@ -5,6 +5,15 @@ const { describe, it } = require('node:test');
 describe('DataCache', () => {
     describe('local network sensor data', () => {
         const sampleData = require('./../sample_data/data.json');
+        const zeroSampleData = {
+            sensordatavalues: [
+                { value_type: 'temperature', value: '0' },
+                { value_type: 'humidity', value: '0' },
+                { value_type: 'pressure', value: '0' },
+                { value_type: 'P1', value: '0' },
+                { value_type: 'P2', value: '0' }
+            ]
+        };
 
         it('should parse temperature data from DHT22 correctly', () => {
             const dataCache = new DataCache();
@@ -21,6 +30,18 @@ describe('DataCache', () => {
             dataCache._updateAirQuality(sampleData);
             assert.equal(dataCache.pm10, 27.73);
             assert.equal(dataCache.pm25, 19.43);
+        });
+        it('should parse zero values as valid sensor readings', () => {
+            const dataCache = new DataCache();
+            dataCache._updateTemperature(zeroSampleData);
+            dataCache._updateHumidity(zeroSampleData);
+            dataCache._updatePressure(zeroSampleData);
+            dataCache._updateAirQuality(zeroSampleData);
+            assert.equal(dataCache.temperature, 0);
+            assert.equal(dataCache.humidity, 0);
+            assert.equal(dataCache.pressure, 0);
+            assert.equal(dataCache.pm10, 0);
+            assert.equal(dataCache.pm25, 0);
         });
 
         const sampleDataBME280 = require('./../sample_data/data_BME280.json');
